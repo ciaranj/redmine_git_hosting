@@ -28,4 +28,3 @@ module Gitosis
     end
   end
 end
-RepositoriesController.send(:include, Gitosis::Patches::RepositoriesControllerPatch) unless RepositoriesController.include?(Gitosis::Patches::RepositoriesControllerPatch)

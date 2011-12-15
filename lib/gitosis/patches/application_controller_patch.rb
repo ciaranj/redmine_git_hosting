@@ -22,5 +22,3 @@ module Gitosis
     end
   end
 end
-
-ApplicationController.send(:include, Gitosis::Patches::ApplicationControllerPatch) unless ApplicationController.include?(Gitosis::Patches::ApplicationControllerPatch)
