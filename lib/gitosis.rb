@@ -48,13 +48,6 @@ module Gitosis
 
 	def self.update_repositories(projects)
 		projects = (projects.is_a?(Array) ? projects : [projects])
-	
-		if(defined?(@recursionCheck))
-			if(@recursionCheck)
-				return
-			end
-		end
-		@recursionCheck = true
 
 		# Don't bother doing anything if none of the projects we've been handed have a Git repository
 		unless projects.detect{|p|  p.repository.is_a?(Repository::Git) }.nil?
@@ -122,7 +115,7 @@ module Gitosis
 			if changed
 				git_push_file = File.join(local_dir, 'git_push.bat')
 
-	      new_dir= File.join(local_dir,'gitosis')
+				new_dir= File.join(local_dir,'gitosis')
 				new_dir.gsub!(/\//, '\\')
 				File.open(git_push_file, "w") do |f|
 					f.puts "cd #{new_dir}"
@@ -142,7 +135,6 @@ module Gitosis
 
 			lockfile.flock(File::LOCK_UN)
 		end
-		@recursionCheck = false
 
 	end
 	
