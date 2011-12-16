@@ -12,8 +12,10 @@ require 'gitosis/patches/git_adapter_patch'
 Dispatcher.to_prepare do
   GitosisObserver.instance
 
-  ApplicationController.send(:include, Gitosis::Patches::ApplicationControllerPatch) unless ApplicationController.included_modules.include? Gitosis::Patches::ApplicationControllerPatch
+  require 'repositories_controller'
+  ApplicationController.send(:include, Gitosis::Patches::ApplicationControllerPatch) unless ApplicationController.included_modules.include?(Gitosis::Patches::ApplicationControllerPatch)
   RepositoriesController.send(:include, Gitosis::Patches::RepositoriesControllerPatch) unless RepositoriesController.include?(Gitosis::Patches::RepositoriesControllerPatch)
+  RepositoriesController.send(:include, Gitosis::Patches::ApplicationControllerPatch) unless RepositoriesController.included_modules.include?(Gitosis::Patches::ApplicationControllerPatch)
   RepositoriesHelper.send(:include, Gitosis::Patches::RepositoriesHelperPatch) unless RepositoriesHelper.include?(Gitosis::Patches::RepositoriesHelperPatch)
   Redmine::Scm::Adapters::GitAdapter.send(:include, Gitosis::Patches::GitAdapterPatch) unless Redmine::Scm::Adapters::GitAdapter.include?(Gitosis::Patches::GitAdapterPatch)
 

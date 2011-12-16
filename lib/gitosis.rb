@@ -21,7 +21,7 @@ module Gitosis
     rendered = rendered + "<li>" + baseUrlList[0] + projectId + baseUrlList[1] + "</li>"
     
     rendered = rendered + "</ul>\n"
-    
+    \
     return rendered
   end
   
