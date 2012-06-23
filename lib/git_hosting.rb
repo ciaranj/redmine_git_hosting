@@ -204,9 +204,9 @@ module GitHosting
 					end
 
 					#git daemon
-					if (project.repository.git_daemon == 1 || project.repository.git_daemon == nil )  && project.is_public
-						read_user_keys.push "daemon"
-					end
+					#if (project.repository.git_daemon == 1 || project.repository.git_daemon == nil )  && project.is_public
+					#	read_user_keys.push "daemon"
+					#end
 
 					conf.set_read_user repo_name, read_user_keys
 					conf.set_write_user repo_name, write_user_keys	
