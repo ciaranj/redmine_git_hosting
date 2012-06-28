@@ -55,3 +55,4 @@ end
 class GitRepoUrlHook < Redmine::Hook::ViewListener
 	render_on :view_repositories_show_contextual, :partial => 'git_urls'
 end
+Redmine::Scm::Adapters::GitAdapter::SCM_GIT_REPORT_LAST_COMMIT= false
