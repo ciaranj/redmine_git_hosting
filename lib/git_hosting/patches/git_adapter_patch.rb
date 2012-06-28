@@ -3,6 +3,7 @@ module GitHosting
 	module Patches
 		module GitAdapterPatch
 			
+# raised if scm command exited with error, e.g. unknown revision.
 			def self.included(base)
 				base.class_eval do
 					unloadable
@@ -51,7 +52,7 @@ module GitHosting
 				full_args += args
 				ret = shellout(full_args.map { |e| shell_quote e.to_s }.join(' '), &block)
 				if $? && $?.exitstatus != 0
-					raise ScmCommandAborted, "git exited with non-zero status: #{$?.exitstatus}"
+					raise Redmine::Scm::Adapters::GitAdapter::ScmCommandAborted, "git exited with non-zero status: #{$?.exitstatus}"
 				end
 				ret
 			end
