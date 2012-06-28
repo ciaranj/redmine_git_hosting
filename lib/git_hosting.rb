@@ -6,7 +6,8 @@ require 'gitolite_conf.rb'
     
 module GitHosting
 	def self.repository_name project
-		parent_name = project.parent ? repository_name(project.parent) : ""
+		#parent_name = project.parent ? repository_name(project.parent) : ""
+		parent_name = ""
 		return "#{parent_name}/#{project.identifier}".sub(/^\//, "")
     end
     
