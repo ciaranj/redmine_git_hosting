@@ -10,6 +10,7 @@ module GitHosting
 				end
 				base.send(:alias_method_chain, :lastrev,   :time_fixed)
 				base.send(:alias_method_chain, :revisions, :time_fixed)
+				base.send(:alias_method_chain, :entries, :entry_caching)
 				
 				begin			
 					base.send(:alias_method_chain, :scm_cmd, :ssh)
@@ -57,6 +58,11 @@ module GitHosting
 				ret
 			end
 
+			def entries_with_entry_caching(path=nil, identifier=nil)
+			return @entries if @entries
+				@entries= entries_without_entry_caching(path, identifier)
+				@entries
+			end
 
 			def lastrev_with_time_fixed(path,rev)
 				return nil if path.nil?
