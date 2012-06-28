@@ -59,6 +59,7 @@ module GitHosting
 				full_args += args
 
 				cmd_str=full_args.map { |e| shell_quote e.to_s }.join(' ')
+				logger.info cmd_str
 				out=nil
 				retio = nil
 				cached=GitCache.find_by_command(cmd_str)
