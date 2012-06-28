@@ -105,14 +105,15 @@ module GitHosting
 	end
 
 	def self.get_full_parent_path(project, is_file_path)
-		parent_parts = [];
-		p = project
-		while p.parent
-			parent_id = p.parent.identifier.to_s
-			parent_parts.unshift(parent_id)
-			p = p.parent
-		end
-		return is_file_path ? File.join(parent_parts) : parent_parts.join("/")
+		#parent_parts = [];
+		#p = project
+		#while p.parent
+		#	parent_id = p.parent.identifier.to_s
+		#	parent_parts.unshift(parent_id)
+		#	p = p.parent
+		#end
+		#return is_file_path ? File.join(parent_parts) : parent_parts.join("/")
+		return ""
 	end
 
 	def self.repository_name project
