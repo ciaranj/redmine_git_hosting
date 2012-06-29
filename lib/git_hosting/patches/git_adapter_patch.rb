@@ -7,6 +7,7 @@ module GitHosting
 					unloadable
 				end
 
+				base.send(:alias_method_chain, :entries, :entry_caching)
 				begin
 					base.send(:alias_method_chain, :scm_cmd, :sudo)
 				rescue Exception =>e
@@ -34,6 +35,11 @@ module GitHosting
 				end
 			end
 
+			def entries_with_entry_caching(path=nil, identifier=nil)
+				return @entries if @entries
+				@entries= entries_without_entry_caching(path, identifier)
+				@entries
+			end
 
 			def scm_cmd_with_sudo(*args, &block)
 
