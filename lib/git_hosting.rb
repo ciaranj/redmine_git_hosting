@@ -30,28 +30,29 @@ module GitHosting
 
 	@@mirror_pubkey = nil
 	def self.mirror_push_public_key
-		if @@mirror_pubkey.nil?
-
-			%x[cat '#{Setting.plugin_redmine_git_hosting['gitoliteIdentityFile']}' | #{GitHosting.git_user_runner} 'cat > ~/.ssh/gitolite_admin_id_rsa ' ]
-			%x[cat '#{Setting.plugin_redmine_git_hosting['gitoliteIdentityPublicKeyFile']}' | #{GitHosting.git_user_runner} 'cat > ~/.ssh/gitolite_admin_id_rsa.pub ' ]
-			%x[ #{GitHosting.git_user_runner} 'chmod 600 ~/.ssh/gitolite_admin_id_rsa' ]
-			%x[ #{GitHosting.git_user_runner} 'chmod 644 ~/.ssh/gitolite_admin_id_rsa.pub' ]
-
-			pubk =  ( %x[cat '#{Setting.plugin_redmine_git_hosting['gitoliteIdentityPublicKeyFile']}' ]  ).chomp.strip
-			git_user_dir = ( %x[ #{GitHosting.git_user_runner} "cd ~ ; pwd" ] ).chomp.strip
-			%x[ #{GitHosting.git_user_runner} 'echo "#{pubk}"  > ~/.ssh/gitolite_admin_id_rsa.pub ' ]
-			%x[ echo '#!/bin/sh' | #{GitHosting.git_user_runner} 'cat > ~/.ssh/run_gitolite_admin_ssh']
-			%x[ echo 'exec ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i #{git_user_dir}/.ssh/gitolite_admin_id_rsa    "$@"' | #{GitHosting.git_user_runner} "cat >> ~/.ssh/run_gitolite_admin_ssh"  ]
-			%x[ #{GitHosting.git_user_runner} 'chmod 644 ~/.ssh/gitolite_admin_id_rsa.pub' ]
-			%x[ #{GitHosting.git_user_runner} 'chmod 600 ~/.ssh/gitolite_admin_id_rsa']
-			%x[ #{GitHosting.git_user_runner} 'chmod 700 ~/.ssh/run_gitolite_admin_ssh']
-
-			@@mirror_pubkey = pubk.split(/[\t ]+/)[0].to_s + " " + pubk.split(/[\t ]+/)[1].to_s
+#		if @@mirror_pubkey.nil?
+#
+#			%x[cat '#{Setting.plugin_redmine_git_hosting['gitoliteIdentityFile']}' | #{GitHosting.git_user_runner} 'cat > ~/.ssh/gitolite_admin_id_rsa ' ]
+#			%x[cat '#{Setting.plugin_redmine_git_hosting['gitoliteIdentityPublicKeyFile']}' | #{GitHosting.git_user_runner} 'cat > ~/.ssh/gitolite_admin_id_rsa.pub ' ]
+#			%x[ #{GitHosting.git_user_runner} 'chmod 600 ~/.ssh/gitolite_admin_id_rsa' ]
+#			%x[ #{GitHosting.git_user_runner} 'chmod 644 ~/.ssh/gitolite_admin_id_rsa.pub' ]
+#
+#			pubk =  ( %x[cat '#{Setting.plugin_redmine_git_hosting['gitoliteIdentityPublicKeyFile']}' ]  ).chomp.strip
+#			git_user_dir = ( %x[ #{GitHosting.git_user_runner} "cd ~ ; pwd" ] ).chomp.strip
+#			%x[ #{GitHosting.git_user_runner} 'echo "#{pubk}"  > ~/.ssh/gitolite_admin_id_rsa.pub ' ]
+#			%x[ echo '#!/bin/sh' | #{GitHosting.git_user_runner} 'cat > ~/.ssh/run_gitolite_admin_ssh']
+#			%x[ echo 'exec ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i #{git_user_dir}/.ssh/gitolite_admin_id_rsa    "$@"' | #{GitHosting.git_user_runner} "cat >> ~/.ssh/run_gitolite_admin_ssh"  ]
+#			%x[ #{GitHosting.git_user_runner} 'chmod 644 ~/.ssh/gitolite_admin_id_rsa.pub' ]
+#			%x[ #{GitHosting.git_user_runner} 'chmod 600 ~/.ssh/gitolite_admin_id_rsa']
+#			%x[ #{GitHosting.git_user_runner} 'chmod 700 ~/.ssh/run_gitolite_admin_ssh']
+#
+#			@@mirror_pubkey = pubk.split(/[\t ]+/)[0].to_s + " " + pubk.split(/[\t ]+/)[1].to_s
 
 			#settings = Setting["plugin_redmine_git_hosting"]
 			#settings["gitMirrorPushPublicKey"] = publicKey
 			#Setting["plugin_redmine_git_hosting"] = settings
-		end
+#		end
+		@@mirror_pubkey= []
 		@@mirror_pubkey
 	end
 
@@ -271,7 +272,7 @@ module GitHosting
 		end
 		%x[chmod 700 "#{local_dir}/gitolite-admin" ]
 		# Make sure we have our hooks setup
-		GitAdapterHooks.check_hooks_installed
+		#GitAdapterHooks.check_hooks_installed
 	end
 
 	def self.move_repository(old_name, new_name)
@@ -434,9 +435,9 @@ module GitHosting
 
 			# Set post recieve hooks for new projects
 			# We need to do this AFTER push, otherwise necessary repos may not be created yet
-			if new_projects.length > 0
-				GitAdapterHooks.setup_hooks(new_projects)
-			end
+			#if new_projects.length > 0
+		#		GitAdapterHooks.setup_hooks(new_projects)
+		#	end
 
 			unlock()
 		end
@@ -460,23 +461,23 @@ module GitHosting
 
 	def self.check_hooks_installed
 		installed = false
-		if lock(5)
-			installed = GitAdapterHooks.check_hooks_installed
-			unlock()
-		end
+		#if lock(5)
+		#	installed = GitAdapterHooks.check_hooks_installed
+		#	unlock()
+		#end
 		installed
 	end
 	def self.setup_hooks(projects=nil)
-		if lock(5)
-			GitAdapterHooks.setup_hooks(projects)
-			unlock()
-		end
+	#	if lock(5)
+	#		GitAdapterHooks.setup_hooks(projects)
+	#		unlock()
+	#	end
 	end
 	def self.update_global_hook_params
-		if lock(5)
-			GitAdapterHooks.update_global_hook_params
-			unlock()
-		end
+		#if lock(5)
+	#		GitAdapterHooks.update_global_hook_params
+	#		unlock()
+	#	end
 	end
-end
+end;
 

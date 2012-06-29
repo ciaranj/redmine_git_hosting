@@ -41,9 +41,8 @@ module GitHosting
 							page.replace_html "main-menu", render_main_menu(@project)
 						end
 					end
-
 					GitHosting.update_repositories(@project, false) if !@project.repository.nil?
-					GitHosting.setup_hooks(@project) if !@project.repository.nil?
+					#GitHosting.setup_hooks(@project) if !@project.repository.nil?
 
 				else
 					edit_without_scm_settings
