@@ -344,6 +344,7 @@ module GitHosting
 	end
 
 	@@recursionCheck = false
+	@@projects_so_far= []
 	def self.update_repositories(projects, is_repo_delete)
 
 
@@ -356,11 +357,12 @@ module GitHosting
 
 		logger.debug "Updating repositories..."
 		projects = (projects.is_a?(Array) ? projects : [projects])
-
+                
+		 @@projects_so_far.each { |p| logger.info p.name }
+                projects= projects.select{|p| !@@projects_so_far.include?(p) }
 
 		# Don't bother doing anything if none of the projects we've been handed have a Git repository
 		unless projects.detect{|p|  p.repository.is_a?(Repository::Git) }.nil?
-
 
 
 			#lock
@@ -383,7 +385,7 @@ module GitHosting
 			changed = false
 
 			projects.select{|p| p.repository.is_a?(Repository::Git)}.each do |project|
-
+				@@projects_so_far << project
 				repo_name = repository_name(project)
 
 				#check for delete -- if delete we can just
