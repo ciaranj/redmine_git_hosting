@@ -1,11 +1,13 @@
 <h2><%= link_to l(:label_public_keys), :controller=> "my", :action => "account"  %> &#187; <%= h @gitolite_public_key %></h2>
 
-<%= error_messages_for :gitolite_public_key %>
+<%= error_messages_for 'gitolite_public_key' %>
 
-<% form_for :public_key, @gitolite_public_key, :url => { :action => "update" }, :html => { :method => :put},
-                          :builder => TabularFormBuilder,
-                          :lang => current_language do |f| %>
-
+<%= 
+#form_for :public_key, @gitolite_public_key, :url => { :action => "update" }, :html => { :method => :put},
+#                          :builder => TabularFormBuilder,
+#                          :lang => current_language do |f| 
+labelled_form_for :public_key, @gitolite_public_key, url: { action: 'update'}, :html => {:method => :put}  do |f| 
+%>
 	<%= render :partial => 'form', :locals => { :f => f } %>
 	<%= submit_tag l(:button_save) %>
 <% end %>

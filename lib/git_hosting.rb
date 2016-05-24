@@ -317,7 +317,7 @@ module GitHosting
 
 	@@recursionCheck = false
 	def self.update_repositories(projects, is_repo_delete)
-
+puts caller
 		if(defined?(@@recursionCheck))
 			if(@@recursionCheck)
 				return
@@ -327,10 +327,12 @@ module GitHosting
 
 		logger.debug "Updating repositories..."
 		projects = (projects.is_a?(Array) ? projects : [projects])
-
+#		projects.each do |p|
+#			puts "#{p} -> #{p.methods}"
+#		end	
 
 		# Don't bother doing anything if none of the projects we've been handed have a Git repository
-		unless projects.detect{|p|  p.repository.is_a?(Repository::Git) }.nil?
+		unless projects.detect{|p| p.repository.is_a?(Repository::Git) }.nil?
 
 
 

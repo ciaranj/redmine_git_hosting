@@ -1,0 +1,3 @@
+$('#ajax-modal').html('<%= escape_javascript(render :partial => 'gitolite_public_keys/index') %>');
+showModal('ajax-modal', '600px', '<%= escape_javascript l(:label_public_keys) %>');
+$('#email_address_address').focus();

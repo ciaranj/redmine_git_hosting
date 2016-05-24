@@ -68,8 +68,8 @@ class GitHostingObserver < ActiveRecord::Observer
 		projects = []
 		case object
 			when Repository::Git then projects.push(object.project)
-			when User then projects = object.projects unless is_login_save?(object)
-			when GitolitePublicKey then projects = object.user.projects
+			when User then projects = object.projects.find_all.to_a unless is_login_save?(object)
+			when GitolitePublicKey then projects = object.user.projects.find_all.to_a
 			when Member then projects.push(object.project)
 			when Role then projects = object.members.map(&:project).flatten.uniq.compact
 		end

@@ -2,6 +2,7 @@ class GitolitePublicKey < ActiveRecord::Base
 	STATUS_ACTIVE = 1
 	STATUS_LOCKED = 0
 
+	attr_accessible :title, :user, :key
 	belongs_to :user
 	validates_uniqueness_of :title, :scope => :user_id
 	validates_uniqueness_of :identifier, :score => :user_id

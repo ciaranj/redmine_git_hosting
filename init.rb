@@ -80,6 +80,10 @@ class GitRepoUrlHook < Redmine::Hook::ViewListener
 	render_on :view_repositories_show_contextual, :partial => 'git_urls'
 end
 
+class PublicKeysHook < Redmine::Hook::ViewListener
+	render_on :view_my_account_contextual, :partial => 'git_contextual' 
+end
+
 
 # initialize association from user -> public keys
 User.send(:has_many, :gitolite_public_keys, :dependent => :destroy)
@@ -94,16 +98,5 @@ Project.send(:has_many, :repository_mirrors, :dependent => :destroy)
 # initialize observer
 RedmineApp::Application.config.after_initialize do
 	RedmineApp::Application.config.observers= [GitHostingObserver, GitHostingSettingsObserver]
-#	if RedmineApp::Application.config.action_controller.perform_caching
-#		ActiveRecord::Base.observers = ActiveRecord::Base.observers << GitHostingObserver
-#		ActiveRecord::Base.observers = ActiveRecord::Base.observers << GitHostingSettingsObserver
-#
-#		ActionController::Dispatcher.to_prepare(:git_hosting_observer_reload) do
-#			GitHostingObserver.instance.reload_this_observer
-##		end
-#		ActionController::Dispatcher.to_prepare(:git_hosting_settings_observer_reload) do
-#			GitHostingSettingsObserver.instance.reload_this_observer
-#		end
-#	end
 end
 

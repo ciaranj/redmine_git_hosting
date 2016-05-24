@@ -34,3 +34,10 @@
 #	end
 #end
 
+RedmineApp::Application.routes.draw do
+  scope 'my', as: 'my' do
+	resources :public_keys, :controller => 'gitolite_public_keys'
+  end
+  resources :gitolite_public_keys
+end 
+

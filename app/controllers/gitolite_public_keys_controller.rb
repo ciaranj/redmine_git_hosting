@@ -9,7 +9,7 @@ class GitolitePublicKeysController < ApplicationController
 	def edit
 	end
 
-	def delete
+	def destroy
 		@gitolite_public_key[:active] = 0
 		@gitolite_public_key.save
 		redirect_to url_for(:controller => 'my', :action => 'account')
@@ -25,7 +25,10 @@ class GitolitePublicKeysController < ApplicationController
 	end
 
 	def create
+		puts @user
 		@gitolite_public_key = GitolitePublicKey.new(params[:public_key].merge(:user => @user))
+		puts @gitolite_public_key
+		puts @gitolite_public_key.user
 		if @gitolite_public_key.save
 			flash[:notice] = l(:notice_public_key_added)
 		else
