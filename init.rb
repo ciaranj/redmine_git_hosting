@@ -17,9 +17,9 @@ Redmine::Plugin.register :redmine_git_hosting do
 		'gitServer' => 'localhost',
 		'gitUser' => 'git',
 		'gitRepositoryBasePath' => 'repositories/',
-        'gitUserIdentityFile' => RAILS_ROOT + '/.ssh/git_user_id_rsa',
-		'gitoliteIdentityFile' => RAILS_ROOT + '/.ssh/gitolite_admin_id_rsa',
-		'gitoliteIdentityPublicKeyFile' => RAILS_ROOT + '/.ssh/gitolite_admin_id_rsa.pub',
+        'gitUserIdentityFile' => Rails.root + '/.ssh/git_user_id_rsa',
+		'gitoliteIdentityFile' => Rails.root + '/.ssh/gitolite_admin_id_rsa',
+		'gitoliteIdentityPublicKeyFile' =>  Rails.root + '/.ssh/gitolite_admin_id_rsa.pub',
 		'allProjectsUseGit' => 'false',
 		'deleteGitRepositories' => 'false',
 		'gitRepositoriesShowUrl' => 'true',
@@ -36,8 +36,7 @@ Redmine::Plugin.register :redmine_git_hosting do
 			permission :edit_repository_mirrors, :repository_mirrors => :edit
 		end
 end
-require "dispatcher"
-Dispatcher.to_prepare :redmine_git_patches do
+Rails.configuration.to_prepare do
 
   require_dependency 'git_hosting'
 
@@ -53,11 +52,6 @@ Dispatcher.to_prepare :redmine_git_patches do
   require 'git_hosting/patches/repository_patch'
   Repository.send(:include, GitHosting::Patches::RepositoryPatch)
 
-  require 'stringio'
-  require_dependency 'redmine/scm/adapters/git_adapter'
-  require 'git_hosting/patches/git_adapter_patch'
-  Redmine::Scm::Adapters::GitAdapter.send(:include, GitHosting::Patches::GitAdapterPatch)
-
   require_dependency 'groups_controller'
   require 'git_hosting/patches/groups_controller_patch'
   GroupsController.send(:include, GitHosting::Patches::GroupsControllerPatch)
@@ -67,7 +61,14 @@ Dispatcher.to_prepare :redmine_git_patches do
   require 'git_hosting/patches/git_repository_patch'
   Repository::Git.send(:include, GitHosting::Patches::GitRepositoryPatch)
 
+  require_dependency 'redmine/scm/adapters/git_adapter'
+  Redmine::Scm::Adapters::GitAdapter.send(:include, GitHosting::Patches::GitAdapterPatch) unless Redmine::Scm::Adapters::GitAdapter.included_modules.include? GitHosting::Patches::GitAdapterPatch
+
   require_dependency 'git_hosting/patches/repository_cia_filters'
+
+  RedmineApp::Application.config.observers= [GitHostingObserver, GitHostingSettingsObserver]
+  GitHostingObserver.instance.reload_this_observer
+  GitHostingSettingsObserver.instance.reload_this_observer
 end
 
 # initialize hooks
@@ -91,17 +92,18 @@ Repository.send(:has_many, :cia_notifications, :foreign_key =>'repository_id', :
 Project.send(:has_many, :repository_mirrors, :dependent => :destroy)
 
 # initialize observer
-config.after_initialize do
-	if config.action_controller.perform_caching
-		ActiveRecord::Base.observers = ActiveRecord::Base.observers << GitHostingObserver
-		ActiveRecord::Base.observers = ActiveRecord::Base.observers << GitHostingSettingsObserver
-
-		ActionController::Dispatcher.to_prepare(:git_hosting_observer_reload) do
-			GitHostingObserver.instance.reload_this_observer
-		end
-		ActionController::Dispatcher.to_prepare(:git_hosting_settings_observer_reload) do
-			GitHostingSettingsObserver.instance.reload_this_observer
-		end
-	end
+RedmineApp::Application.config.after_initialize do
+	RedmineApp::Application.config.observers= [GitHostingObserver, GitHostingSettingsObserver]
+#	if RedmineApp::Application.config.action_controller.perform_caching
+#		ActiveRecord::Base.observers = ActiveRecord::Base.observers << GitHostingObserver
+#		ActiveRecord::Base.observers = ActiveRecord::Base.observers << GitHostingSettingsObserver
+#
+#		ActionController::Dispatcher.to_prepare(:git_hosting_observer_reload) do
+#			GitHostingObserver.instance.reload_this_observer
+##		end
+#		ActionController::Dispatcher.to_prepare(:git_hosting_settings_observer_reload) do
+#			GitHostingSettingsObserver.instance.reload_this_observer
+#		end
+#	end
 end
 

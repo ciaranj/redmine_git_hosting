@@ -3,18 +3,17 @@ module GitHosting
 		module GitAdapterPatch
 
 			def self.included(base)
+				base.extend(ClassMethods)
+                                base.send(:include, InstanceMethods)
 				base.class_eval do
 					unloadable
-				end
 
-				base.send(:alias_method_chain, :entries, :entry_caching)
-				begin
-					base.send(:alias_method_chain, :scm_cmd, :sudo)
-				rescue Exception =>e
-				end
-
-				base.extend(ClassMethods)
-				base.class_eval do
+					alias_method_chain :entries, :entry_caching
+					begin
+						alias_method_chain :scm_cmd, :sudo
+					rescue Exception =>e
+					end
+	
 					class << self
 						alias_method_chain :sq_bin, :sudo
 						begin
@@ -34,15 +33,15 @@ module GitHosting
 					return GitHosting::git_exec()
 				end
 			end
+                        module InstanceMethods
 
-			def entries_with_entry_caching(path=nil, identifier=nil)
+			def entries_with_entry_caching(path=nil, identifier=nil, report_last_commit=nil)
 				return @entries if @entries
-				@entries= entries_without_entry_caching(path, identifier)
+				@entries= entries_without_entry_caching(path, identifier, report_last_commit)
 				@entries
 			end
 
 			def scm_cmd_with_sudo(*args, &block)
-
 				args.each do |a|
 					a.gsub!(/^\.\-\w_\:]/, '')
 				end
@@ -107,7 +106,7 @@ module GitHosting
 				retio
 			end
 
-
+			end
 		end
 	end
 end

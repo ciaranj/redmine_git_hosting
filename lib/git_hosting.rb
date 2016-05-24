@@ -60,7 +60,7 @@ module GitHosting
 	@@sudo_git_to_web_user_stamp = nil
 	@@sudo_git_to_web_user_cached = nil
 	def self.sudo_git_to_web_user
-		if not @@sudo_git_to_web_user_cached.nil? and (Time.new - @@sudo_git_to_web_user_stamp <= 0.5):
+		if not @@sudo_git_to_web_user_cached.nil? and (Time.new - @@sudo_git_to_web_user_stamp <= 0.5) then
 			return @@sudo_git_to_web_user_cached
 		end
 		logger.info "Testing if git user(\"#{git_user}\") can sudo to web user(\"#{web_user}\")"
@@ -84,7 +84,7 @@ module GitHosting
 	@@sudo_web_to_git_user_stamp = nil
 	@@sudo_web_to_git_user_cached = nil
 	def self.sudo_web_to_git_user
-		if not @@sudo_web_to_git_user_cached.nil? and (Time.new - @@sudo_web_to_git_user_stamp <= 0.5):
+		if not @@sudo_web_to_git_user_cached.nil? and (Time.new - @@sudo_web_to_git_user_stamp <= 0.5) then
 			return @@sudo_web_to_git_user_cached
 		end
 		logger.info "Testing if web user(\"#{web_user}\") can sudo to git user(\"#{git_user}\")"
@@ -318,7 +318,6 @@ module GitHosting
 	@@recursionCheck = false
 	def self.update_repositories(projects, is_repo_delete)
 
-
 		if(defined?(@@recursionCheck))
 			if(@@recursionCheck)
 				return
@@ -353,11 +352,9 @@ module GitHosting
 			new_repos = []
 			new_projects = []
 			changed = false
-
 			projects.select{|p| p.repository.is_a?(Repository::Git)}.each do |project|
 
 				repo_name = repository_name(project)
-
 				#check for delete -- if delete we can just
 				#delete repo, and ignore updating users/public keys
 				if is_repo_delete
@@ -374,9 +371,8 @@ module GitHosting
 
 					end
 
-
 					# fetch users
-					users = project.member_principals.map(&:user).compact.uniq
+					users = project.memberships.active.map(&:user).compact.uniq
 					write_users = users.select{ |user| user.allowed_to?( :commit_access, project ) }
 					read_users = users.select{ |user| user.allowed_to?( :view_changesets, project ) && !user.allowed_to?( :commit_access, project ) }
 
@@ -388,7 +384,6 @@ module GitHosting
 							changed = true
 						end
 					end
-
 					# delete inactives
 					users.map{|u| u.gitolite_public_keys.inactive}.flatten.compact.uniq.each do |key|
 						filename = File.join(local_dir, 'gitolite-admin/keydir',"#{key.identifier}.pub")
@@ -413,7 +408,6 @@ module GitHosting
 					if (project.repository.extra.git_daemon == 1 || project.repository.extra.git_daemon == nil )  && project.is_public
 						read_user_keys.push "daemon"
 					end
-
 					conf.set_read_user repo_name, read_user_keys
 					conf.set_write_user repo_name, write_user_keys
 				end
@@ -430,7 +424,7 @@ module GitHosting
 				%x[env GIT_SSH=#{gitolite_ssh()} git --git-dir='#{local_dir}/gitolite-admin/.git' --work-tree='#{local_dir}/gitolite-admin' config user.email '#{Setting.mail_from}']
 				%x[env GIT_SSH=#{gitolite_ssh()} git --git-dir='#{local_dir}/gitolite-admin/.git' --work-tree='#{local_dir}/gitolite-admin' config user.name 'Redmine']
 				%x[env GIT_SSH=#{gitolite_ssh()} git --git-dir='#{local_dir}/gitolite-admin/.git' --work-tree='#{local_dir}/gitolite-admin' commit -a -m 'updated by Redmine' ]
-				%x[env GIT_SSH=#{gitolite_ssh()} git --git-dir='#{local_dir}/gitolite-admin/.git' --work-tree='#{local_dir}/gitolite-admin' push ]
+				%x[env GIT_SSH=#{gitolite_ssh()} git --git-dir='#{local_dir}/gitolite-admin/.git' --work-tree='#{local_dir}/gitolite-admin' push origin master:master ]
 			end
 
 			# Set post recieve hooks for new projects
