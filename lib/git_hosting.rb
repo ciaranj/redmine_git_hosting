@@ -317,7 +317,6 @@ module GitHosting
 
 	@@recursionCheck = false
 	def self.update_repositories(projects, is_repo_delete)
-puts caller
 		if(defined?(@@recursionCheck))
 			if(@@recursionCheck)
 				return
